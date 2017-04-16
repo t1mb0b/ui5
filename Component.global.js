@@ -1,15 +1,15 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
-	"graham/client/model/models",
-	"graham/client/controller/ErrorHandler",
+	"app/app/model/models",
+	"app/app/controller/ErrorHandler",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/format/DateFormat",
 	"sap/ushell/services/UserInfo"
 ], function(UIComponent, Device, models, ErrorHandler, JSONModel, DateFormat, UserInfo) {
 	"use strict";
 
-	return UIComponent.extend("graham.client.Component", {
+	return UIComponent.extend("app.app.Component", {
 
 		metadata: {
 			manifest: "json"
