@@ -1,0 +1,71 @@
+<mvc:View controllerName="graham.client.controller.ClientAE" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.m.semantic" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout" xmlns:footerbar="sap.ushell.ui.footerbar">
+	<semantic:FullscreenPage id="clientPage" navButtonPress="onNavBack" showNavButton="true" title="{view>/title}" busy="{view>/busy}"
+		busyIndicatorDelay="0">
+		<semantic:content>
+			<VBox class="sapUiSmallMargin">
+				<f:SimpleForm id="clientAddEditForm" editable="true" layout="ResponsiveGridLayout">
+					<f:toolbar>
+						<Toolbar id="clientToolbar">
+							<Title text="Client Info" level="H4" titleStyle="H4"/>
+							<ToolbarSpacer/>
+						</Toolbar>
+					</f:toolbar>
+					<f:content>
+						<Toolbar>
+							<Title text="General" level="H5" titleStyle="H5"/>
+							<ToolbarSpacer/>
+							<Label text="Active:"/>
+							<CheckBox id="clientActiveFlag" selected="{ path: 'active_flag', formatter: '.formatter.checkBox' }"/>
+							<Label text="Strategic:"/>
+							<CheckBox id="clientStrategicFlag" selected="{ path: 'strategic_flag', formatter: '.formatter.checkBox' }"/>
+							<Button icon="sap-icon://business-card"/>
+						</Toolbar>
+						<Label text="Client Name"/>
+						<Input id="clientName" value="{client_name}"/>
+						<Label text="Web"/>
+						<Input id="clientURL" value="{client_url}" type="Url"/>
+						<Label text="Email"/>
+						<Input id="clientEmail" value="{client_email}"/>
+						<Label text="Maintained By"/>
+						<Select id="clientMaintainedBy" items="{ path: 'view>/facilityList' }" selectedKey="{facility_ba_id}">
+							<core:Item key="{view>facility_ba_id}" text="{view>facility_name}"/>
+						</Select>
+						<Label text="Primary Function"/>
+						<Select id="clientPrimaryFunction" items="{ path: 'global>/primaryFunctionTypes' }" selectedKey="{primary_function_type_id}">
+							<core:Item key="{global>id}" text="{global>description}"/>
+						</Select>
+						<Label text="Client Status"/>
+						<Select id="clientStatus" items="{ path: 'global>/clientStatuses' }" selectedKey="{client_status_code}">
+							<core:Item key="{global>code}" text="{global>description}"/>
+						</Select>
+					</f:content>
+				</f:SimpleForm>
+				<f:SimpleForm id="clientAddEditDivReg" editable="true" layout="ResponsiveGridLayout">
+					<Toolbar>
+						<Title text="Divisions and Regions" level="H5" titleStyle="H5"/>
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://addresses"/>
+					</Toolbar>
+					<f:content>
+						<Label text="Divisions"/>
+						<MultiComboBox id="divisionsList" selectionChange="onSelectionChange" selectionFinish="onSelectionFinish"
+							items="{ path: '/DivisionList', sorter: { path: 'division_description' } }">
+							<core:Item key="{division_code}" text="{division_description}"/>
+						</MultiComboBox><Button icon="sap-icon://accept" text="Submit" press="_submitDivisions"/>
+						<Label text="Regions"/>
+						<MultiComboBox id="regionsList" selectionChange="onSelectionChange" selectionFinish="onSelectionFinish"
+							items="{ path: '/RegionList', sorter: { path: 'region_description' } }">
+							<core:Item key="{region_id}" text="{region_description}"/>
+						</MultiComboBox><Button icon="sap-icon://accept" text="Submit" press="_submitRegions"/>
+					</f:content>
+				</f:SimpleForm>
+			</VBox>
+			<l:VerticalLayout id="revisionData" class="sapUiSmallMargin"/>
+		</semantic:content>
+		<semantic:customFooterContent>
+			<Button text="Update Client Data" press="_submitClient"/>
+			
+		</semantic:customFooterContent>
+	</semantic:FullscreenPage>
+</mvc:View>
