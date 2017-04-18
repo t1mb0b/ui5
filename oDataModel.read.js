@@ -11,6 +11,25 @@
 					console.log(oError);
 				}
 			});
+
+====================
+
+		_updateChildren: function(sClientId) {
+			var sRelPath = "/ClientRelationshipInput(ipi_ba_id=" + sClientId + ",ipv_current_client_only_flag='Y')/Results";
+			this.getModel().read(sRelPath, {
+				success: function(oResponse) {
+					//this._setList(oResponse);
+					var aChildren = oResponse.results.filter(function(obj) {
+						return +sClientId !== obj.client_ba_id;
+					});
+					this.setViewProperty("view", "aChildren", aChildren);
+				}.bind(this),
+				error: function(oError) {
+					MessageToast.show("Error Reading list of Relationships; please try again");
+					console.log(oError);
+				}
+			});
+		},
       
 ===================
 
