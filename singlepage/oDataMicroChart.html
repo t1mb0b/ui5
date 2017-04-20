@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 single file template | nabisoft</title>
+    <!-- decide what version you want to use, see http://scn.sap.com/community/developer-center/front-end/blog/2015/07/30/multi-version-availability-of-sapui5:
+        <script src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+        <script src="https://sapui5.hana.ondemand.com/1.28.28/resources/sap-ui-core.js"
+        <script src="https://openui5beta.hana.ondemand.com/resources/sap-ui-core.js"
+        <script src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+        <script src="https://openui5.hana.ondemand.com/1.36.12/resources/sap-ui-core.js"
+        -->
+    <script src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js" id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.m" data-sap-ui-bindingSyntax="complex" data-sap-ui-compatVersion="edge" data-sap-ui-preload="async"></script>
+    <!-- use "sync" or change the code below if you have issues -->
+
+    <!-- XMLView -->
+    <script id="myXmlView" type="ui5/xmlview">
+        <mvc:View controllerName="MyController" 
+				xmlns="sap.m" 
+xmlns:f="sap.ui.layout.form" 
+xmlns:l="sap.ui.layout" 
+xmlns:core="sap.ui.core" 
+xmlns:mvc="sap.ui.core.mvc" 
+xmlns:chart="sap.suite.ui.microchart">
+
+
+
+
+<VBox busyIndicatorDelay="0">
+	<chart:ComparisonMicroChart id="compChart" size="M" scale="K" class="sapUiSmallMargin" press="press"
+		colorPalette="#5cbae6, #b6d957, #fac364, #8cd3ff, #d998cb, #f2d249, #93b9c6, #ccc5a8, #52bacc, #dbdb46, #98aafb">
+		<chart:data>
+
+		</chart:data>
+	</chart:ComparisonMicroChart>
+</VBox>
+
+
+
+            <Table id="myTable" growing="true" growingThreshold="250" growingScrollToLoad="true" busyIndicatorDelay="0">
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="Projects" />
+                    </Toolbar>
+                </headerToolbar>
+                <columns>
+                    <Column>
+                        <Text text="Type" />
+                    </Column>
+                    <Column>
+                        <Text text="Active/Total Count | Active/Total Value" />
+                    </Column>
+                    <Column>
+                        <Text text="Chart" />
+                    </Column>
+                </columns>
+                <items>
+                    <!-- filled via bindItems() in controller -->
+                </items>
+            </Table>
+
+
+        </mvc:View>
+    </script>
+
+    <!-- XML Fragment -->
+    <script id="myXMLFragment" type="ui5/fragment">
+        <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:chart="sap.suite.ui.microchart">
+            <ColumnListItem type="Active">
+                <cells>
+                    <ObjectIdentifier title="{stage}" />
+
+                    <Text text="{active_count} / {total_count} | {path: 'active_value', formatter: '.formatter.money'} / {path: 'total_value', formatter: '.formatter.money'}" />
+
+                    <FlexBox height="1rem">
+                        <chart:StackedBarMicroChart size="Responsive" press="press" precision="0">
+                            <chart:bars>
+
+                                <chart:StackedBarMicroChartBar valueColor="#FF0000" value="{ path: 'active_count'}" displayValue="{path: 'active_count'}" />
+                                <chart:StackedBarMicroChartBar valueColor="#008000" value="{ path: 'total_count'}" displayValue="{path: 'total_count'}" />
+                            </chart:bars>
+                        </chart:StackedBarMicroChart>
+                    </FlexBox>
+                    <FlexBox>
+                    </FlexBox>
+
+
+
+                </cells>
+            </ColumnListItem>
+        </core:FragmentDefinition>
+    </script>
+    <script id="chartFragment" type="ui5/fragment">
+        <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:chart="sap.suite.ui.microchart">
+
+            <chart:ComparisonMicroChartData title="{stage}" value="{path: 'total_value', formatter: '.formatter.mils'}"/>
+
+        </core:FragmentDefinition>
+
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            "use strict";
+
+            //### Controller ###
+            sap.ui.define([
+                    "sap/ui/core/mvc/Controller",
+                    "sap/ui/model/odata/v2/ODataModel",
+                    "sap/m/MessageBox",
+                	"sap/ui/model/Filter",
+                	"sap/ui/model/FilterOperator"
+                	], function (Controller, ODataModel, MessageBox, Filter, FilterOperator) {
+                "use strict";
+
+                return Controller.extend("MyController", {
+
+                    onInit: function () {
+                        this.getView().setModel(
+                            new ODataModel("https://rhddba01:4300/graham_app/client/services/client.xsodata/", {
+                                json: true,
+                                useBatch: false
+                            })
+                        );
+
+                        var sPath = "/ClientProjectSummaryInput(ipi_ba_id=5399,ipc_active_flag='')/Results";
+                        var oTable = this.byId("myTable");
+                        var oChart = this.byId("compChart");
+                        var oTemplate = sap.ui.xmlfragment({
+                            fragmentContent: jQuery("#myXMLFragment").html()
+                        }, this);
+                        var oChartTemplate = sap.ui.xmlfragment({
+                            fragmentContent: jQuery("#chartFragment").html()
+                        }, this);
+
+                        oTable.bindItems(sPath, oTemplate, null /*oSorter*/ , null /*aFilters*/ );
+                        //oChart.bindAggregation("data",sPath,oChartTemplate);
+
+
+                       oChart.bindAggregation("data", {
+                            path: sPath,
+                            template: new sap.suite.ui.microchart.ComparisonMicroChartData({
+                                title: "{stage}",
+                                value: {
+            						path: "total_value",
+            						formatter: this.formatter.mils
+                                }
+                            })
+                        }); 
+                    },
+
+                    formatter: {
+
+                        number: function (sValue) {
+                            return parseFloat(sValue);
+                        },
+
+                        money: function (sNumber) {
+                            if (typeof sNumber === "string") {
+                                var moneyFormatter = new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 0
+                                });
+                            }
+                            return (moneyFormatter.format(sNumber));
+                        },
+                        
+                		mils: function(sNumber) {
+                			if (typeof sNumber === "string") {
+                				return sNumber > 999 ? parseFloat((sNumber/1000).toFixed(1)) : parseFloat(sNumber);
+                			}
+                		},
+
+                    }
+
+
+
+                });
+            });
+
+            //### THE APP: place the XMLView somewhere into DOM ###
+            sap.ui.xmlview({
+                viewContent: jQuery("#myXmlView").html()
+            }).placeAt("content");
+
+        });
+    </script>
+
+</head>
+
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
+
+</html>
