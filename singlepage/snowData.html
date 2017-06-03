@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 single file template | nabisoft</title>
+    <script src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js" id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.m" data-sap-ui-bindingSyntax="complex" data-sap-ui-compatVersion="edge" data-sap-ui-preload="async"></script>
+    <!-- use "sync" or change the code below if you have issues -->
+
+    <!-- XMLView -->
+    <script id="myXmlView" type="ui5/xmlview">
+        <mvc:View controllerName="MyController" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:u="sap.ui.unified" xmlns:core="sap.ui.core">
+
+            <Button id="newTask" press="createTask" text="Create Task" />
+            <List id="myList" enablebusyindicator="true" headerText="Tasks" footerText="End of List" growing="true" growingScrollToLoad="true" growingThreshold="10" inset="true" items="{
+			path: '/'
+		}">
+                <StandardListItem title="{number}" description="{short_description}" />
+            </List>
+
+
+
+        </mvc:View>
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            //### Controller ###
+            sap.ui.define([
+                "sap/ui/core/mvc/Controller",
+                "sap/ui/model/odata/v2/ODataModel",
+                "sap/ui/model/json/JSONModel",
+                "sap/m/MessageToast"
+            ], function(Controller, ODataModel, JSONModel, MessageToast) {
+                "use strict";
+
+                //### Controller ###
+                sap.ui.controller("MyController", {
+                    onInit: function() {
+
+                        var snowData = new JSONModel();
+                        this.getView().setModel(snowData);
+                        
+                        this.getList();
+                        
+                    },
+                    
+                    getList: function() {
+                        var oModel = this.getView().getModel();
+                        var sInstance = "https://XXXXX.service-now.com/"
+                        var sApi = "api/now/table/"
+                        var sQuery = "u_tim_tasks?sysparm_query=ORDERBYDESCnumber&sysparm_fields=number%2C%20short_description"
+                        
+                        $.ajax({
+                            url: sInstance + sApi + sQuery,
+                            async: true,
+                            dataType: 'json',
+                            type: 'GET',
+                            beforeSend: function(xhr) {
+                                xhr.setRequestHeader('Authorization', 'Basic XXXX');
+                            },
+                            success: function(oData) {
+                                if (!oData) {
+                                    sap.m.MessageToast.show("Not able to get Data");
+                                }
+                                else {
+                                    oModel.setData(oData.result);
+                                    oModel.refresh();
+                                }
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                sap.m.MessageToast.show("Connection not able to establish");
+                            }
+                        });
+                    },
+
+                    createTask: function() {
+                        
+                        var oList = this.byId("myList");
+                        var oModel = this.getView().getModel();
+                        
+                        var sInstance = "https://XXXXXXX.service-now.com/";
+                        var sApi = "api/87234/hr_wf_api"
+                        var sAddQuery = "u_tim_tasks?sysparm_fields=number%2Csys_id";
+                        var sUser = "Beth Anglin";
+                        var sAssignmentGroup = "Service Desk";
+                        var oRequestData = {
+                            "short_description": "Testing Object",
+                            "work_notes": "Do stuff Please",
+                            "description": "Please process this task",
+                            "opened_by": sUser,
+                            "assignment_group": sAssignmentGroup
+                        };
+                        var oRequest = JSON.stringify(oRequestData);
+
+                        $.ajax({
+                            url: sInstance + sApi,
+                            async: true,
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            dataType: 'json',
+                            type: "POST",
+                            data: oRequest,
+                            beforeSend: function(xhr) {
+                                xhr.setRequestHeader('Authorization', 'Basic XXXX');
+                            },
+                            success: function(oData) {
+                                if (!oData) {
+                                    sap.m.MessageToast.show("Not able to get Data");
+                                }
+                                else {
+                                    //console.log(oData.result);
+                                    MessageToast.show("We have created " + oData.result.number + " with " + oData.result.sys_id);
+                                }
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                sap.m.MessageToast.show("Error establishing connection, please try again");
+                                console.log(errorThrown);
+                            }
+                        });
+                    }
+                });
+            });
+
+            //### THE APP: place the XMLView somewhere into DOM ###
+            sap.ui.xmlview({
+                viewContent: jQuery("#myXmlView").html()
+            }).placeAt("content");
+
+        });
+    </script>
+
+</head>
+
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
+
+</html>
