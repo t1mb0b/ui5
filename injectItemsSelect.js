@@ -13,3 +13,15 @@ _setBlankFilterState: function () {
 				     }
 				}, this);
 			}
+
+
+====
+	
+	
+<Select id="filterStatus" app:function="getSelectedKey" app:Property="Status" items="{/Statuses}">
+							<items>
+								<core:item text="{Name}" key="{Id}" />
+							</items>
+						</Select> 
+ 
+
