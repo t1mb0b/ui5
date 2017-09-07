@@ -110,36 +110,6 @@
             sap.ui.getCore().attachInit(function () {
                 "use strict";
  
-/*                //### Custom Control ###
-                // remove the first parameter in "real" apps
-                sap.ui.define("nabisoft/ui/Headline",[
-                    "sap/ui/core/Control"
-                ], function(Control) {
-                    "use strict";
- 
-                    return Control.extend("nabisoft.ui.Headline", {
-                        metadata : {
-                            properties : {
-                                text: {type : "string"}
-                            },
-                            aggregations : { },
-                            associations : { },
-                            events : { }
-                        },
- 
-                        init : function () { },
- 
-                        renderer : function (oRM, oControl) {
-                            oRM.write("<h3");
-                            oRM.writeControlData(oControl);
-                            oRM.addClass("nabiUiHeadline");
-                            oRM.writeClasses();
-                            oRM.write(">");
-                            oRM.writeEscaped(oControl.getText());
-                            oRM.write("</h3>");
-                        }
-                    });
-                }); */
  
                 //### Controller ###
                 sap.ui.define([
