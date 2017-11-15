@@ -1,0 +1,30 @@
+<Label text="Base Rate Uplift">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Label>
+								<Input id="newHireBaseRateUplift">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Input>
+								<Label text="Uplift (02)">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Label>
+								<Input id="newHireUplift2">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Input>
+								<Label text="Uplift (03)">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Label>
+								<Input id="newHireUplift3">
+									<layoutData>
+										<l:GridData span="XL2 L2 M2 S6"/>
+									</layoutData>
+								</Input>
