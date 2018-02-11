@@ -1,0 +1,44 @@
+<table:Table rows="{
+path: '/table',
+    filters: [{
+        path: 'field3',
+        operator: 'EQ',
+        value1: 'test'
+    }],
+    sorter: [{
+        path: 'field1',
+        descending: false
+    }, {
+        path: 'field2',
+        descending: true
+    }]
+}
+"></table:Table>
+
+-------
+
+items = "{ 
+path: 'ClientProject',
+    sorter: [{
+            path: 'stage_display_order',
+            descending: false
+        },
+        {
+            path: 'stage',
+            descending: false,
+            group: true
+        },
+        {
+            path: 'project_name',
+            descending: false
+        }
+    ],
+    filters: [{
+        path: 'estimate_active_flag',
+        operator: 'EQ',
+        value1: 'Y'
+    }]
+}"
+
+=======
+
