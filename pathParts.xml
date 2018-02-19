@@ -1,3 +1,26 @@
+items = "{ 
+path: 'ClientProject',
+    sorter: [{
+            path: 'stage_display_order',
+            descending: false
+        },
+        {
+            path: 'stage',
+            descending: false,
+            group: true
+        },
+        {
+            path: 'project_name',
+            descending: false
+        }
+    ],
+    filters: [{
+        path: 'estimate_active_flag',
+        operator: 'EQ',
+        value1: 'Y'
+    }]
+}
+
 text = "{ 
     parts: [
         { path: 'stage' }, 
