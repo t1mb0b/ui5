@@ -401,5 +401,380 @@
 				/*that.getModel().read("/Client(" + sClientId + ")/ClientNote", {
 					success: that._setNotes();
 				});
+				
+_setList: function(sPath, sList) {
+			var oViewModel = this.getModel("view");
+			var aItems = [];
+			this.getModel().read(sPath, {
+				success: function(oData, oResponse) {
+					if (sList === "/provinces") {
+						aItems = [{
+							ProvinceCode: "",
+							ProvinceName: "-- Select --",
+							CountryCode: ""
+						}];
+					} else if (sList === "/labourPackages") {
+						aItems = [{
+							LabourPackageCode: "",
+							LabourPackageDescription: "-- Select --",
+							Language: ""
+						}];
+					} else if (sList === "/workContracts") {
+						aItems = [{
+							WorkContractCode: "",
+							WorkContractDescription: "-- Select --",
+							CountryGroup: ""
+						}];
+					} else if (sList === "/compFrequencies") {
+						aItems = [{
+							Code: "",
+							Description: "-- Select --",
+							HourlyFlag: ""
+						}];
+					}
+					if (typeof oResponse.data.results !== "undefined") {
+						aItems = aItems.concat(oResponse.data.results);
+					}
+					oViewModel.setProperty(sList, aItems);
+				},
+				error: function(oError) {
+					MessageToast.show("Error reading the data; please try again later");
+					//console.log(oError);
+				}
+			});
+		},
+
+_bindCostCentreSelect: function() {
+			var that = this;
+			var aFilters = [];
+			var aSorters = [];
+			var sCostCentrePath = "/CostCentres";
+			var oCostCentreSelect = this.byId("costCentreSelect");
+			var oCostCentreSelectTemplate = new sap.ui.core.Item({
+				key: "{CostCentreCode}",
+				text: "{CompanyCode} {CostCentreCode} {CostCentreDescription}"
+			});
+			// aSorters.push(new sap.ui.model.Sorter("ReasonForActionCode", false));
+			// aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+			oCostCentreSelect.bindAggregation("items", {
+				path: sCostCentrePath,
+				template: oCostCentreSelectTemplate,
+				filters: aFilters,
+				sorter: aSorters,
+				events: {
+					dataReceived: function() {
+						if (!that._isEdit()) {
+							var aItems = oCostCentreSelect.getItems();
+							if (aItems.length === 1) {
+								oCostCentreSelect.setSelectedKey(aItems[0].getKey());
+								oCostCentreSelect.fireChange({
+									selectedItem: aItems[0]
+								});
+							} else {
+								oCostCentreSelect.insertItem(new sap.ui.core.Item({
+									text: "-- Select --",
+									key: ""
+								}), 0);
+								oCostCentreSelect.setSelectedKey("");
+								// oViewModel.setProperty("/companySelect", true);
+							}
+						}
+					}
+				}
+			});
+		},
+
+
+_bindManagerSelect: function(sManagerPositionNumber) {
+			var that = this;
+			var aFilters = [];
+			var aSorters = [];
+			var sManagerPath = "/Managers";
+			var oManagerSelect = this.byId("managerSelect");
+			var oManagerSelectTemplate = new sap.ui.core.Item({
+				key: "{EmployeeID}",
+				text: "{Name} ({EmployeeID}) - {PositionDescription}"
+			});
+			aSorters.push(new sap.ui.model.Sorter("FormattedName", false));
+			// aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+			if (sManagerPositionNumber && sManagerPositionNumber !== "") {
+				aFilters.push(new Filter("PositionNumber", "EQ", sManagerPositionNumber));
+			}
+			oManagerSelect.bindAggregation("items", {
+				path: sManagerPath,
+				template: oManagerSelectTemplate,
+				filters: aFilters,
+				sorter: aSorters,
+				events: {
+					dataReceived: function() {
+						if (!that._isEdit()) {
+							var aItems = oManagerSelect.getItems();
+							if (aItems.length === 1) {
+								oManagerSelect.setSelectedKey(aItems[0].getKey());
+								oManagerSelect.fireChange({
+									selectedItem: aItems[0]
+								});
+							} else {
+								oManagerSelect.insertItem(new sap.ui.core.Item({
+									text: "-- Select --",
+									key: ""
+								}), 0);
+								oManagerSelect.setSelectedKey("");
+								// oViewModel.setProperty("/companySelect", true);
+							}
+						}
+					}
+				}
+			});
+		},
+*/
+
+/*_bindCompanySelect: function() {
+		var that = this;
+		var oViewModel = this.getModel("view");
+		var aFilters = [];
+		var oCompanySelect = this.byId("companySelect");
+		var oTemplate = new sap.ui.core.Item({
+			key: "{CompanyCode}",
+			text: "{CompanyName}"
+		});
+
+		var sPath = "/Companies";
+		oCompanySelect.bindAggregation("items", {
+			path: sPath,
+			template: oTemplate,
+			filters: aFilters,
+			events: {
+				dataReceived: function() {
+					if (!that._isEdit()) {
+						var aItems = oCompanySelect.getItems();
+						if (aItems.length === 1) {
+							oCompanySelect.setSelectedKey(aItems[0].getKey());
+							oCompanySelect.fireChange({
+								selectedItem: aItems[0]
+							});
+						} else {
+							oCompanySelect.insertItem(new sap.ui.core.Item({
+								text: "-- Select --",
+								key: ""
+							}), 0);
+							oCompanySelect.setSelectedKey("");
+							// oViewModel.setProperty("/companySelect", true);
+						}
+					}
+				}
+			}
+		});
+	},*/
+
+/*_bindPayrollFrequencySelect: function() {
+	var that = this;
+	var aFilters = [];
+	var aSorters = [];
+	var sPath = "/CompensationFrequencies";
+	var oPayrollFrequencySelect = this.byId("wageType");
+	var oPayrollFrequencySelectTemplate = new sap.ui.core.Item({
+		key: "{Code}",
+		text: "{Description}"
+	});
+	// aSorters.push(new sap.ui.model.Sorter("ReasonForActionCode", false));
+	// aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+	oPayrollFrequencySelect.bindAggregation("items", {
+		path: sPath,
+		template: oPayrollFrequencySelectTemplate,
+		filters: aFilters,
+		sorter: aSorters,
+		events: {
+			dataReceived: function() {
+				if (!that._isEdit()) {
+					var aItems = oPayrollFrequencySelect.getItems();
+					if (aItems.length === 1) {
+						oPayrollFrequencySelect.setSelectedKey(aItems[0].getKey());
+						oPayrollFrequencySelect.fireChange({
+							selectedItem: aItems[0]
+						});
+					} else {
+						oPayrollFrequencySelect.insertItem(new sap.ui.core.Item({
+							text: "-- Select --",
+							key: ""
+						}), 0);
+						oPayrollFrequencySelect.setSelectedKey("");
+						// oViewModel.setProperty("/companySelect", true);
+					}
+				}
+			}
+		}
+	});
+},*/
+
+/*_bindFacilitySelect: function() {
+	var that = this;
+	var aFilters = [];
+	var aSorters = [];
+	var sFacilityPath = "/Facilities";
+	var oFacilitySelect = this.byId("facilitySelect");
+	var oFacilitySelectTemplate = new sap.ui.core.Item({
+		key: "{FacilityCode}",
+		text: "{FacilityCode} {FacilityDescription}"
+	});
+	// aSorters.push(new sap.ui.model.Sorter("ReasonForActionCode", false));
+	// aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+	oFacilitySelect.bindAggregation("items", {
+		path: sFacilityPath,
+		template: oFacilitySelectTemplate,
+		filters: aFilters,
+		sorter: aSorters,
+		events: {
+			dataReceived: function() {
+				if (!that._isEdit()) {
+					var aItems = oFacilitySelect.getItems();
+					if (aItems.length === 1) {
+						oFacilitySelect.setSelectedKey(aItems[0].getKey());
+						oFacilitySelect.fireChange({
+							selectedItem: aItems[0]
+						});
+					} else {
+						oFacilitySelect.insertItem(new sap.ui.core.Item({
+							text: "-- Select --",
+							key: ""
+						}), 0);
+						oFacilitySelect.setSelectedKey("");
+						// oViewModel.setProperty("/companySelect", true);
+					}
+				}
+			}
+		}
+	});
+},*/
+
+/*_bindOrgUnitSelect: function() {
+	var that = this;
+	var aFilters = [];
+	var aSorters = [];
+	var sOrgUnitPath = "/OrganizationalUnits";
+	var oOrgUnitSelect = this.byId("orgUnitSelect");
+	var oOrgUnitSelectTemplate = new sap.ui.core.Item({
+		key: "{OrganizationalUnitCode}",
+		text: "{OrganizationalUnitCode} {OrganizationalUnitDescription}"
+	});
+	// aSorters.push(new sap.ui.model.Sorter("ReasonForActionCode", false));
+	// aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+	oOrgUnitSelect.bindAggregation("items", {
+		path: sOrgUnitPath,
+		template: oOrgUnitSelectTemplate,
+		filters: aFilters,
+		sorter: aSorters,
+		events: {
+			dataReceived: function() {
+				if (!that._isEdit()) {
+					var aItems = oOrgUnitSelect.getItems();
+					if (aItems.length === 1) {
+						oOrgUnitSelect.setSelectedKey(aItems[0].getKey());
+						oOrgUnitSelect.fireChange({
+							selectedItem: aItems[0]
+						});
+					} else {
+						oOrgUnitSelect.insertItem(new sap.ui.core.Item({
+							text: "-- Select --",
+							key: ""
+						}), 0);
+						oOrgUnitSelect.setSelectedKey("");
+						// oViewModel.setProperty("/companySelect", true);
+					}
+				}
+			}
+		}
+	});
+}, */
+
+/*_bindReasonSelect: function() {
+	var that = this;
+	var aFilters = [];
+	var aSorters = [];
+	var sReasonPath = "/ChangeReasons";
+	var oReasonSelect;
+	var oReasonSelectTemplate = new sap.ui.core.Item({
+		key: "{ReasonForActionCode}",
+		text: "{ReasonForActionCode} {ReasonForActionDescription}"
+	});
+	aSorters.push(new sap.ui.model.Sorter("ReasonForActionCode", false));
+	if (this._isChange()) {
+		oReasonSelect = this.byId("reasonSelect");
+		aFilters.push(new Filter("ActionTypeCode", "EQ", "K5"));
+	} else if (this._isNewHire()) {
+		oReasonSelect = this.byId("hireReasonSelect");
+		if (this.getModel("view").getProperty("/newEmployee")) {
+			aFilters.push(new Filter("ActionTypeCode", "EQ", "K1"));
+		} else {
+			aFilters.push(new Filter("ActionTypeCode", "EQ", "K4"));
+		}
+	}
+
+	oReasonSelect.bindAggregation("items", {
+		path: sReasonPath,
+		template: oReasonSelectTemplate,
+		filters: aFilters,
+		sorter: aSorters,
+		events: {
+			dataReceived: function() {
+				if (!that._isEdit()) {
+					var aItems = oReasonSelect.getItems();
+					if (aItems.length === 1) {
+						oReasonSelect.setSelectedKey(aItems[0].getKey());
+						oReasonSelect.fireChange({
+							selectedItem: aItems[0]
+						});
+					} else {
+						oReasonSelect.insertItem(new sap.ui.core.Item({
+							text: "-- Select --",
+							key: ""
+						}), 0);
+						oReasonSelect.setSelectedKey("");
+						// oViewModel.setProperty("/companySelect", true);
+					}
+				}
+			}
+		}
+	});
+},*/
+
+/*_bindVehicleAllowanceSelect: function() {
+	var that = this;
+	var aFilters = [];
+	var aSorters = [];
+	var sReasonPath = "/VehicleAllowances";
+	var oVehicleAllowanceSelect = this.byId("vehicleAllowanceSelect");
+	var oVehicleAllowanceSelectTemplate = new sap.ui.core.Item({
+		key: "{VehicleAllowanceCode}",
+		text: "{VehicleAllowanceDescription}"
+	});
+
+	oVehicleAllowanceSelect.bindAggregation("items", {
+		path: sReasonPath,
+		template: oVehicleAllowanceSelectTemplate,
+		filters: aFilters,
+		sorter: aSorters,
+		events: {
+			dataReceived: function() {
+				if (!that._isEdit()) {
+					var aItems = oVehicleAllowanceSelect.getItems();
+					if (aItems.length === 1) {
+						oVehicleAllowanceSelect.setSelectedKey(aItems[0].getKey());
+						oVehicleAllowanceSelect.fireChange({
+							selectedItem: aItems[0]
+						});
+					} else {
+						oVehicleAllowanceSelect.insertItem(new sap.ui.core.Item({
+							text: "-- Select --",
+							key: ""
+						}), 0);
+						oVehicleAllowanceSelect.setSelectedKey("");
+						//oViewModel.setProperty("/companySelect", true);
+					}
+				}
+			}
+		}
+	});
+},
 		
 		
