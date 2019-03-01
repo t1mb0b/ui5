@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>SAPUI5 single file template | nabisoft</title>
-        <!-- decide what version you want to use, see http://scn.sap.com/community/developer-center/front-end/blog/2015/07/30/multi-version-availability-of-sapui5:
+
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 single file template | nabisoft</title>
+    <!-- decide what version you want to use, see http://scn.sap.com/community/developer-center/front-end/blog/2015/07/30/multi-version-availability-of-sapui5:
         <script src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
         <script src="https://sapui5.hana.ondemand.com/1.28.28/resources/sap-ui-core.js"
         <script src="https://openui5beta.hana.ondemand.com/resources/sap-ui-core.js"
         <script src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
         <script src="https://openui5.hana.ondemand.com/1.36.12/resources/sap-ui-core.js"
         -->
-        <script src="https://sapui5.hana.ondemand.com/1.38.12/resources/sap-ui-core.js"
-            id="sap-ui-bootstrap"
-            data-sap-ui-theme="sap_bluecrystal"
-            data-sap-ui-libs="sap.m"
-            data-sap-ui-bindingSyntax="complex"
-            data-sap-ui-compatVersion="edge"
-            data-sap-ui-preload="async"></script>
-            <!-- use "sync" or change the code below if you have issues -->
- 
-        <!-- XMLView -->
-        <script id="myXmlView" type="ui5/xmlview">
-            <mvc:View
+    <script src="https://sapui5.hana.ondemand.com/1.38.12/resources/sap-ui-core.js" id="sap-ui-bootstrap"
+        data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.m" data-sap-ui-bindingSyntax="complex"
+        data-sap-ui-compatVersion="edge" data-sap-ui-preload="async"></script>
+    <!-- use "sync" or change the code below if you have issues -->
+
+    <!-- XMLView -->
+    <script id="myXmlView" type="ui5/xmlview">
+        <mvc:View
                 controllerName="MyController"
                 xmlns="sap.m"
 				xmlns:f="sap.ui.layout.form"
@@ -35,21 +32,21 @@
         selectionMode="None"
         enableColumnReordering="false"
         expandFirstLevel="false">
- 
+
         <table:columns>
- 
+
             <table:Column label="Client Name">
                 <table:template>
                     <Text text="{client_name}"/>
                 </table:template>
             </table:Column>
- 
+
         </table:columns>
 
 <table:rows>
 
 </table:rows>
- 
+
     </table:TreeTable>
 
 
@@ -86,10 +83,10 @@
 
             </mvc:View>
         </script>
- 
-        <!-- XML Fragment -->
-        <script id="myXMLFragment" type="ui5/fragment">
-            <core:FragmentDefinition
+
+    <!-- XML Fragment -->
+    <script id="myXMLFragment" type="ui5/fragment">
+        <core:FragmentDefinition
                 xmlns="sap.m"
                 xmlns:core="sap.ui.core">
                 <ColumnListItem type="Active">
@@ -102,186 +99,188 @@
                 </ColumnListItem>
             </core:FragmentDefinition>
         </script>
- 
-        <script>
-            sap.ui.getCore().attachInit(function () {
+
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            "use strict";
+
+            //### Controller ###
+            sap.ui.define([
+                "sap/ui/core/mvc/Controller",
+                "sap/ui/model/json/JSONModel",
+                "sap/ui/model/odata/v2/ODataModel",
+                "sap/m/MessageBox"
+            ], function (Controller, JSONModel, ODataModel, MessageBox) {
                 "use strict";
- 
-                //### Controller ###
-                sap.ui.define([
-                    "sap/ui/core/mvc/Controller",
-                    "sap/ui/model/json/JSONModel",
-                    "sap/ui/model/odata/v2/ODataModel",
-                    "sap/m/MessageBox"
-                ], function (Controller, JSONModel, ODataModel, MessageBox) {
-                    "use strict";
- 
-                    return Controller.extend("MyController", {
-                        onInit : function () {
-                        	
-                        	var oViewModel = new JSONModel({
-                        		tableTitle: "Client Relationships",
-                        		treeView: [],
-                        		treeNodes: []
-                        	});
-                        	
-                            this.getView().setModel(
-                                new ODataModel("https://rhddba01:4300/app/client/services/client.xsodata/", {
-                                    json : true,
-                                    useBatch : false
+
+                return Controller.extend("MyController", {
+                    onInit: function () {
+
+                        var oViewModel = new JSONModel({
+                            tableTitle: "Client Relationships",
+                            treeView: [],
+                            treeNodes: []
+                        });
+
+                        this.getView().setModel(
+                            new ODataModel(
+                                "https://rhddba01:4300/app/client/services/client.xsodata/", {
+                                    json: true,
+                                    useBatch: false
                                 })
-                            );
- 
-                            var sPath = "/ClientRelationshipInput(5399)/Results";
-                            var oTable = this.byId("myTable");
-                            var oTreeTable = this.byId("myTreeTable");
-                            var oTemplate =  sap.ui.xmlfragment({
-                                fragmentContent : jQuery("#myXMLFragment").html()
-                            });
-                            var oSorter = new sap.ui.model.Sorter("display_order", false)
-                            
-                			oTable.bindAggregation("items", {
-                				path: sPath,
-                				template: new sap.m.ColumnListItem({
-                					cells: [
-                						new sap.m.Label({
-                							text: "{relationship_type}",
-                							design: "Bold"
-                						}),
-                						new sap.m.Text({
-                							text: "{client_name}"
-                						}),
-                						new sap.m.Text({
-                							text: "{ba_id_ordered_list}"
-                						})
-                					]
-                				}),
-                				sorter: oSorter
-                			}); 
-                            
-                            oTreeTable.bindRows({
-                            	 path : sPath,
-                            	 parameters : {
-                                     treeAnnotationProperties : {
-                                         hierarchyLevelFor : "level_number",
-                                         hierarchyNodeFor : "client_ba_id",
-                                         hierarchyParentNodeFor : "parent_ba_id",
-                     					 hierarchyDrillStateFor : "node_type"
-                                     }
-                            	 }
-                            }); 
- 
-                            //oTable.bindItems(sPath, oTemplate, null /*oSorter*/, null /*aFilters*/);
-                            this.getView().setModel(oViewModel, "view");
-                            this.getView().getModel().read(sPath, {
-                            	success: function(oData, oResponse) {
- /*                           		var aNodes = [];
-                            		oResponse.data.results.forEach(function(oNode) {
-                            		    var nodeList = oNode.ba_id_ordered_list;
-                            		    aNodes.push(nodeList);
-                            		});
+                        );
 
-                            		var aTree = [];
-                            		oResponse.data.results.forEach(function(oClient) {
-                            		    var h = oClient.ba_id_ordered_list.split("-");
-                            		    var me = h[h.length -1];
-                            		    var parent = h.slice(-2)[0];
-                            		    var hLen = h.length === 1 ? 0 : h.length - 1;
-                            		    var nodes = oClient.ba_id_ordered_list;
-                            		    var count = 0;
-                            		    for (var i=0;i<aNodes.length;i++) {
-                            		        if(aNodes[i].indexOf(nodes) !== -1) {
-                            		            count++
-                            		        }
-                            		    }
-                            		    var dState = count > 1 ? "O" : "S";
-                            		          aTree.push({
-                            					clientId: Number(me),
-                            					parentId: Number(parent),
-                            					nodeList: nodes,
-                            					hierarchyLevel: hLen,
-                            					clientName: oClient.client_name,
-                            					relType: oClient.relationship_type,
-                            					drillState: dState
-                            					});
-                            		});
-                            		this._setTree(aTree); */
-                            		this.transformTreeData(oResponse.data.results);
-                            	}.bind(this),
-                            	error: function(oError) {
-                            		console.log(oError);
-                            	}
-                            });
-                            
-                            
-                        },
-                        
-                        onAfterRendering: function(){
-                       	   var oTreeTable = this.getView().byId("myTreeTable");
-                       	   oTreeTable.expandToLevel(6); //number of the levels of the tree table.
-                       	   //for (var i=0; i < oTreeTable.getRows().length; i++) {
-    						//	oTreeTable.expand(i);
-							//}
-                       	},
-                        
-                        _setTree: function(aTree) {
-                        	//this.transformTreeData(aTree);
-                        	this.getView().getModel("view").setProperty("/treeView", aTree);
-                        },
-                        
-                        transformTreeData: function(nodesIn) {
-                            var nodes = [];
-                            //'deep' object structure
-                            var nodeMap = {};
-                            //'map', each node is an attribute
-                            if (nodesIn) {
-                                var nodeOut;
-                                var parentId;
-                                for (var i = 0; i < nodesIn.length; i++) {
-                                    var nodeIn = nodesIn[i]
-                                    nodeOut = {
-                                        id: nodeIn.client_ba_id,
-                                        text: nodeIn.client_name,
-                                        type: nodeIn.node_type,
-                                        children: []
-                                    };
-                                    parentId = nodeIn.parent_ba_id;
-                                    if (parentId) {
-                                        //we have a parent, add the node there
-                                        //NB because object references are used, changing the node
-                                        //in the nodeMap changes it in the nodes array too
-                                        //(we rely on parents always appearing before their children)
-                                        var parent = nodeMap[nodeIn.parent_ba_id];
-                                        if (parent) {
-                                            parent.children.push(nodeOut);
-                                        }
-                                    } else {
-                                        //there is no parent, must be top level
-                                        nodes.push(nodeOut);
-                                    }
-                                    //add the node to the node map, which is a simple 1-level list of all nodes
-                                    nodeMap[nodeOut.id] = nodeOut;
+                        var sPath = "/ClientRelationshipInput(5399)/Results";
+                        var oTable = this.byId("myTable");
+                        var oTreeTable = this.byId("myTreeTable");
+                        var oTemplate = sap.ui.xmlfragment({
+                            fragmentContent: jQuery("#myXMLFragment").html()
+                        });
+                        var oSorter = new sap.ui.model.Sorter("display_order", false)
 
+                        oTable.bindAggregation("items", {
+                            path: sPath,
+                            template: new sap.m.ColumnListItem({
+                                cells: [
+                                    new sap.m.Label({
+                                        text: "{relationship_type}",
+                                        design: "Bold"
+                                    }),
+                                    new sap.m.Text({
+                                        text: "{client_name}"
+                                    }),
+                                    new sap.m.Text({
+                                        text: "{ba_id_ordered_list}"
+                                    })
+                                ]
+                            }),
+                            sorter: oSorter
+                        });
+
+                        oTreeTable.bindRows({
+                            path: sPath,
+                            parameters: {
+                                treeAnnotationProperties: {
+                                    hierarchyLevelFor: "level_number",
+                                    hierarchyNodeFor: "client_ba_id",
+                                    hierarchyParentNodeFor: "parent_ba_id",
+                                    hierarchyDrillStateFor: "node_type"
                                 }
                             }
-                            return nodes;
-                            this.getView().getModel("view").setProperty("/treeView", nodes);
+                        });
+
+                        //oTable.bindItems(sPath, oTemplate, null /*oSorter*/, null /*aFilters*/);
+                        this.getView().setModel(oViewModel, "view");
+                        this.getView().getModel().read(sPath, {
+                            success: function (oData, oResponse) {
+                                /*                           		var aNodes = [];
+                                                           		oResponse.data.results.forEach(function(oNode) {
+                                                           		    var nodeList = oNode.ba_id_ordered_list;
+                                                           		    aNodes.push(nodeList);
+                                                           		});
+
+                                                           		var aTree = [];
+                                                           		oResponse.data.results.forEach(function(oClient) {
+                                                           		    var h = oClient.ba_id_ordered_list.split("-");
+                                                           		    var me = h[h.length -1];
+                                                           		    var parent = h.slice(-2)[0];
+                                                           		    var hLen = h.length === 1 ? 0 : h.length - 1;
+                                                           		    var nodes = oClient.ba_id_ordered_list;
+                                                           		    var count = 0;
+                                                           		    for (var i=0;i<aNodes.length;i++) {
+                                                           		        if(aNodes[i].indexOf(nodes) !== -1) {
+                                                           		            count++
+                                                           		        }
+                                                           		    }
+                                                           		    var dState = count > 1 ? "O" : "S";
+                                                           		          aTree.push({
+                                                           					clientId: Number(me),
+                                                           					parentId: Number(parent),
+                                                           					nodeList: nodes,
+                                                           					hierarchyLevel: hLen,
+                                                           					clientName: oClient.client_name,
+                                                           					relType: oClient.relationship_type,
+                                                           					drillState: dState
+                                                           					});
+                                                           		});
+                                                           		this._setTree(aTree); */
+                                this.transformTreeData(oResponse.data.results);
+                            }.bind(this),
+                            error: function (oError) {
+                                console.log(oError);
+                            }
+                        });
+
+
+                    },
+
+                    onAfterRendering: function () {
+                        var oTreeTable = this.getView().byId("myTreeTable");
+                        oTreeTable.expandToLevel(6); //number of the levels of the tree table.
+                        //for (var i=0; i < oTreeTable.getRows().length; i++) {
+                        //	oTreeTable.expand(i);
+                        //}
+                    },
+
+                    _setTree: function (aTree) {
+                        //this.transformTreeData(aTree);
+                        this.getView().getModel("view").setProperty("/treeView", aTree);
+                    },
+
+                    transformTreeData: function (nodesIn) {
+                        var nodes = [];
+                        //'deep' object structure
+                        var nodeMap = {};
+                        //'map', each node is an attribute
+                        if (nodesIn) {
+                            var nodeOut;
+                            var parentId;
+                            for (var i = 0; i < nodesIn.length; i++) {
+                                var nodeIn = nodesIn[i]
+                                nodeOut = {
+                                    id: nodeIn.client_ba_id,
+                                    text: nodeIn.client_name,
+                                    type: nodeIn.node_type,
+                                    children: []
+                                };
+                                parentId = nodeIn.parent_ba_id;
+                                if (parentId) {
+                                    //we have a parent, add the node there
+                                    //NB because object references are used, changing the node
+                                    //in the nodeMap changes it in the nodes array too
+                                    //(we rely on parents always appearing before their children)
+                                    var parent = nodeMap[nodeIn.parent_ba_id];
+                                    if (parent) {
+                                        parent.children.push(nodeOut);
+                                    }
+                                } else {
+                                    //there is no parent, must be top level
+                                    nodes.push(nodeOut);
+                                }
+                                //add the node to the node map, which is a simple 1-level list of all nodes
+                                nodeMap[nodeOut.id] = nodeOut;
+
+                            }
                         }
-                        
-                    });
+                        return nodes;
+                        this.getView().getModel("view").setProperty("/treeView", nodes);
+                    }
+
                 });
- 
-                //### THE APP: place the XMLView somewhere into DOM ###
-                sap.ui.xmlview({
-                    viewContent : jQuery("#myXmlView").html()
-                }).placeAt("content");
- 
             });
-        </script>
- 
-    </head>
- 
-    <body class="sapUiBody">
-        <div id="content"></div>
-    </body>
+
+            //### THE APP: place the XMLView somewhere into DOM ###
+            sap.ui.xmlview({
+                viewContent: jQuery("#myXmlView").html()
+            }).placeAt("content");
+
+        });
+    </script>
+
+</head>
+
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
+
 </html>
